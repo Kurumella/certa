@@ -53,7 +53,8 @@ CERTA_CHECKPOINT=goutam/LFM2.5-1.2B-RLCD python -m certa --host 0.0.0.0 --port 8
 # optional: require auth with  CERTA_API_KEY=secret    | throughput: CERTA_BATCH=1  | cache: CERTA_CACHE=1
 ```
 
-Call it with **curl** (Jev-compatible wire protocol):
+Leave it running (it loads the model once at startup); stop it later with `Ctrl-C`. From another
+terminal, call it with **curl** (Jev-compatible wire protocol):
 ```bash
 curl -s localhost:8000/v1/systemone -H 'Content-Type: application/json' -d '{
   "state": "I was double-charged and support ignored me for days.",

@@ -76,10 +76,18 @@ options; the current model's single-letter decode supports **≤ 26 options** (l
 
 ## Serve it
 
+Run Certa as an HTTP service (Jev-compatible) using two terminals.
+
+**Terminal 1 — start the server:**
+
 ```bash
 CERTA_CHECKPOINT=goutam/LFM2.5-1.2B-RLCD python -m certa --port 8000
-# optional bearer auth:  CERTA_API_KEY=secret python -m certa --port 8000
+# optional: require a bearer token with  CERTA_API_KEY=secret
 ```
+
+Wait until it logs `Uvicorn running on http://0.0.0.0:8000` — the model loads once at startup.
+
+**Terminal 2 — call it.** With `curl` (the Jev-compatible wire protocol):
 
 ```bash
 curl -s localhost:8000/v1/systemone -H 'Content-Type: application/json' -d '{
@@ -89,13 +97,22 @@ curl -s localhost:8000/v1/systemone -H 'Content-Type: application/json' -d '{
 }'
 ```
 
-An existing Jev client works unchanged — just repoint `base_url`:
+…or with an existing Jev client — just repoint `base_url` (no other code changes):
 
 ```python
 from typesafe_sdk import TypeSafeClient, Choice
-client = TypeSafeClient(base_url="http://localhost:8000")
-client.system_one(state="...", questions={"team": Choice(instructions="route", criteria={...})})
+
+# The SDK requires an api_key even if the server enforces none — use the gateway's
+# CERTA_API_KEY, or any non-empty placeholder for a local, auth-less server.
+client = TypeSafeClient(base_url="http://localhost:8000", api_key="local")
+resp = client.system_one(
+    state="customer was double-charged and support went quiet",
+    questions={"team": Choice(instructions="route", criteria={"billing": "charges", "technical": "bugs"})},
+)
+print(resp.answers["team"].choice, resp.answers["team"].confidence)
 ```
+
+**Stop the server:** press `Ctrl-C` in Terminal 1.
 
 More in [`examples/`](examples/).
 
