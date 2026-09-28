@@ -9,7 +9,7 @@ can actually trust**. No text generation, no JSON to parse, no prompt engineerin
 ## Quickstart
 
 ```bash
-pip install certa
+pip install "git+https://github.com/Kurumella/certa.git"   # PyPI package coming soon
 ```
 
 ```python
@@ -48,14 +48,18 @@ the rest. Runs in ~14 ms (warm) on a GPU, and no server is required to get start
 
 ## Install
 
+Not yet on PyPI — install from GitHub (a PyPI release is planned, after which `pip install certa`
+will work):
+
 ```bash
-pip install certa            # core: decision engine (what the Quickstart uses)
-pip install 'certa[serve]'   # + FastAPI server, to run it as a service
-pip install 'certa[client]'  # + HTTP client for calling a remote server
+GH="git+https://github.com/Kurumella/certa.git"
+pip install "$GH"                    # core: decision engine (what the Quickstart uses)
+pip install "certa[serve] @ $GH"     # + FastAPI server, to run it as a service
+pip install "certa[client] @ $GH"    # + HTTP client for calling a remote server
 ```
 
-Needs Python ≥ 3.10 and PyTorch; a CUDA GPU is recommended for low latency (it runs on CPU too,
-just slower).
+Or clone and `pip install -e .` for development. Needs Python ≥ 3.10 and PyTorch; a CUDA GPU is
+recommended for low latency (it runs on CPU too, just slower).
 
 ## Primitives
 
@@ -109,6 +113,11 @@ backend = RemoteBackend("http://gateway:8000", api_key="…") # B) call a gatewa
 backend = from_env()                                        # or choose via environment
 resp = backend.decide(state, questions)                     # identical call in all cases
 ```
+
+> **`ModelEngine` vs backends?** `LocalBackend` is simply `ModelEngine` (the Quickstart) behind
+> this shared interface — for local use they're equivalent. Use `ModelEngine` directly for a
+> simple in-process script; reach for the backends when you want to switch local↔remote (or add
+> caching) by **configuration** instead of changing your code.
 
 **A. Local (in-process).** Model and caller on one machine — lowest latency, no network hop.
 Best for a single service that owns a GPU, or for embedding decisions inside a larger app.
