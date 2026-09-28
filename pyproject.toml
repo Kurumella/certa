@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "certa"
+version = "0.1.0"
+description = "Certa: fast, calibrated, typed decisions on open-weight models — a Jev-compatible System One."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Certa contributors" }]
+keywords = ["certa", "typesafe", "calibration", "system-one", "decisions", "llm"]
+# Core stays dependency-light: this is the shared "decision encoding" contract
+# (prompt template, option-token map, confidence math, primitive schemas) that the
+# training repo (certa-rlcd) also depends on. Server/client deps are extras.
+dependencies = [
+    "pydantic>=2.7",
+    "transformers>=4.56",
+    "tokenizers",
+    "numpy",
+    "torch",
+]
+
+[project.urls]
+Homepage = "https://github.com/Kurumella/certa"
+Repository = "https://github.com/Kurumella/certa"
+Model = "https://huggingface.co/goutam/LFM2.5-1.2B-RLCD"
+
+[project.optional-dependencies]
+serve = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+]
+client = [
+    "httpx>=0.27",
+]
+test = [
+    "pytest>=8",
+    "typesafe-sdk>=0.7",
+    "ruff",
+]
+
+[project.scripts]
+certa = "certa.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["certa*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
